@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kuthumipepple/ecommerce-platform/controllers"
-	"github.com/kuthumipepple/ecommerce-platform/database"
-	"github.com/kuthumipepple/ecommerce-platform/routes"
+	"github.com/kuthumipepple/shopping-cart/controllers"
+	"github.com/kuthumipepple/shopping-cart/database"
+	"github.com/kuthumipepple/shopping-cart/routes"
 )
 
 func main() {

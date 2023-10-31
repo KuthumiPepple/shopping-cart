@@ -8,9 +8,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/kuthumipepple/ecommerce-platform/database"
-	"github.com/kuthumipepple/ecommerce-platform/models"
-	"github.com/kuthumipepple/ecommerce-platform/tokens"
+	"github.com/kuthumipepple/shopping-cart/database"
+	"github.com/kuthumipepple/shopping-cart/models"
+	"github.com/kuthumipepple/shopping-cart/tokens"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"

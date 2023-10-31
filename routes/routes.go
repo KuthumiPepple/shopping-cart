@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/kuthumipepple/ecommerce-platform/controllers"
+	"github.com/kuthumipepple/shopping-cart/controllers"
 )
 
 func UserRoutes(routes *gin.Engine) {

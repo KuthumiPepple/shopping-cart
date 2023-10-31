@@ -1,4 +1,4 @@
-module github.com/kuthumipepple/ecommerce-platform
+module github.com/kuthumipepple/shopping-cart
 
 go 1.20
 
