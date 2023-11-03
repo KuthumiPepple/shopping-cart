@@ -73,6 +73,7 @@ func Signup() gin.HandlerFunc {
 		token, refreshToken, err := tokens.GenerateTokens(*newUser.Email, *newUser.FirstName, *newUser.LastName, newUser.UserID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "error while generating tokens"})
+			log.Panic(err)
 		}
 
 		newUser.Token = &token
