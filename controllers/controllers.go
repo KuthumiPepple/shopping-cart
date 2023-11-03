@@ -26,6 +26,17 @@ func HashPassword(passwd string) string {
 	return string(hash)
 }
 
+func VerifyPassword(userPasswd, existingPasswd string) (bool, string) {
+	err := bcrypt.CompareHashAndPassword([]byte(existingPasswd), []byte(userPasswd))
+	check := true
+	var msg string
+	if err != nil {
+		msg = "invalid email or password"
+		check = false
+	}
+	return check, msg
+}
+
 func Signup() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		newUser := models.User{}
@@ -93,7 +104,36 @@ func Signup() gin.HandlerFunc {
 }
 
 func Login() gin.HandlerFunc {
-	return func(c *gin.Context) {}
+	return func(c *gin.Context) {
+		user := models.User{}
+		if err := c.BindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+
+		foundUser := models.User{}
+		err := userCollection.FindOne(ctx, bson.M{"email": user.Email}).Decode(&foundUser)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email or password"})
+			return
+		}
+		isPasswordValid, msg := VerifyPassword(*user.Password, *foundUser.Password)
+		if !isPasswordValid {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
+			return
+		}
+
+		token, refreshToken, err := tokens.GenerateTokens(*foundUser.Email, *foundUser.FirstName, *foundUser.LastName, foundUser.UserID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "error while generating tokens"})
+			log.Panic(err)
+		}
+		tokens.UpdateAllTokens(token, refreshToken, foundUser.UserID)
+
+		c.JSON(http.StatusOK, foundUser)
+	}
 }
 
 func AddProduct() gin.HandlerFunc {
