@@ -17,7 +17,7 @@ func main() {
 		port = "8000"
 	}
 
-	controllers.NewApplication(
+	app := controllers.NewApplication(
 		database.OpenCollection("products"),
 		database.OpenCollection("users"),
 	)
@@ -29,5 +29,7 @@ func main() {
 
 	router.Use(middleware.Authenticate())
 
+	router.GET("/addtocart", app.AddToCart())
+	
 	log.Fatal(router.Run(":" + port))
 }
