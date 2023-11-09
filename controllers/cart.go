@@ -56,3 +56,36 @@ func (app *Application) AddToCart() gin.HandlerFunc {
 		c.JSON(http.StatusOK, "Successfully added to cart")
 	}
 }
+
+func (app *Application) RemoveItem() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		productQueryID := c.Query("id")
+		if productQueryID == "" {
+			log.Println("product id is empty")
+			c.AbortWithError(http.StatusBadRequest, errors.New("product id is empty"))
+			return
+		}
+		userQueryID := c.Query("user_id")
+		if userQueryID == "" {
+			log.Println("user id is empty")
+			c.AbortWithError(http.StatusBadRequest, errors.New("user id is empty"))
+			return
+		}
+		productID, err := primitive.ObjectIDFromHex(productQueryID)
+		if err != nil {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		err = database.RemoveItemFromCart(ctx, app.usersCollection, productID,userQueryID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, "Successfully removed item from cart")
+	}
+}

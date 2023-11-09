@@ -30,6 +30,7 @@ func main() {
 	router.Use(middleware.Authenticate())
 
 	router.PATCH("/addtocart", app.AddToCart())
+	router.PATCH("/removeitem", app.RemoveItem())
 	
 	log.Fatal(router.Run(":" + port))
 }
