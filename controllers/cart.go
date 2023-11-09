@@ -51,6 +51,7 @@ func (app *Application) AddToCart() gin.HandlerFunc {
 		err = database.AddProductToCart(ctx, app.productsCollection, app.usersCollection, productID, userQueryID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err)
+			return
 		}
 		c.JSON(http.StatusOK, "Successfully added to cart")
 	}

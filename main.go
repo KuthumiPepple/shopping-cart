@@ -29,7 +29,7 @@ func main() {
 
 	router.Use(middleware.Authenticate())
 
-	router.GET("/addtocart", app.AddToCart())
+	router.PATCH("/addtocart", app.AddToCart())
 	
 	log.Fatal(router.Run(":" + port))
 }
