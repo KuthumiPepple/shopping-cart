@@ -136,7 +136,7 @@ func Login() gin.HandlerFunc {
 	}
 }
 
-func AddProduct() gin.HandlerFunc {
+func AddProductAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {}
 }
 

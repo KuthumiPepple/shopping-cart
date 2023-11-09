@@ -8,7 +8,7 @@ import (
 func UserRoutes(routes *gin.Engine) {
 	routes.POST("/users/signup", controllers.Signup())
 	routes.POST("/users/login", controllers.Login())
-	routes.POST("/admin/products", controllers.AddProduct())
+	routes.POST("/admin/products", controllers.AddProductAdmin())
 	routes.GET("/users/products", controllers.GetProducts())
 	routes.GET("/users/search", controllers.SearchProductByQuery())
 }
