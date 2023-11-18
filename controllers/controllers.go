@@ -93,13 +93,13 @@ func Signup() gin.HandlerFunc {
 		newUser.AddressDetails = make([]models.Address, 0)
 		newUser.OrderStatus = make([]models.Order, 0)
 
-		insertionResult, insertionErr := userCollection.InsertOne(ctx, newUser)
+		_, insertionErr := userCollection.InsertOne(ctx, newUser)
 		if insertionErr != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "the user did not get created"})
 			return
 		}
 
-		c.JSON(http.StatusCreated, insertionResult)
+		c.JSON(http.StatusCreated, "Successfully created the user!")
 	}
 }
 
