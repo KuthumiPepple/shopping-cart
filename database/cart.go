@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"time"
 
 	"github.com/kuthumipepple/shopping-cart/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -76,5 +77,50 @@ func RemoveItemFromCart(ctx context.Context, usersCollection *mongo.Collection, 
 	if err != nil {
 		return ErrFailedToRemoveItem
 	}
+	return nil
+}
+
+func InstantBuyer(ctx context.Context, productsCollection, usersCollection *mongo.Collection, productID primitive.ObjectID, userID string) error {
+	id, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println(err)
+		return ErrInvalidUserID
+	}
+
+	var productDetails models.UserProduct
+	err = productsCollection.FindOne(ctx, bson.M{"_id": productID}).Decode(&productDetails)
+	if err != nil {
+		log.Println(err)
+		return ErrProductNotFound
+	}
+
+	var orderDetails models.Order
+	orderDetails.OrderID = primitive.NewObjectID()
+	orderDetails.OrderedAt = time.Now().Local()
+	orderDetails.OrderCart = make([]models.UserProduct, 0)
+	orderDetails.PaymentMethod.CashOnDelivery = true
+	orderDetails.Price = productDetails.Price
+
+	filter := bson.M{"_id": id}
+	update := bson.D{
+		{Key: "$push", Value: bson.D{
+			{Key: "orders", Value: orderDetails},
+		}},
+	}
+	_, err = usersCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	filter2 := bson.M{"_id": id}
+	update2 := bson.M{
+		"$push": bson.M{
+			"orders.$[].order_list": productDetails,
+		}}
+	_, err = usersCollection.UpdateOne(ctx, filter2, update2)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

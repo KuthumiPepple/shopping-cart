@@ -31,6 +31,7 @@ func main() {
 
 	router.PATCH("/addtocart", app.AddToCart())
 	router.PATCH("/removeitem", app.RemoveItem())
-	
+	router.PATCH("/instantbuy", app.InstantBuy())
+
 	log.Fatal(router.Run(":" + port))
 }
