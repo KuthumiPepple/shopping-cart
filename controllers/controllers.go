@@ -17,6 +17,7 @@ import (
 )
 
 var userCollection = database.OpenCollection("users")
+var productCollection = database.OpenCollection("products")
 
 func HashPassword(passwd string) string {
 	hash, err := bcrypt.GenerateFromPassword([]byte(passwd), 12)
@@ -137,7 +138,25 @@ func Login() gin.HandlerFunc {
 }
 
 func AddProductAdmin() gin.HandlerFunc {
-	return func(c *gin.Context) {}
+	return func(c *gin.Context) {
+		var product models.Product
+		if err := c.BindJSON(&product); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+		product.ProductID = primitive.NewObjectID()
+		_, err := productCollection.InsertOne(ctx, product)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "product not inserted"})
+			return
+		}
+
+		c.JSON(http.StatusOK, "Successfully inserted new product!")
+
+	}
 }
 
 func GetProducts() gin.HandlerFunc {
