@@ -33,8 +33,8 @@ func (app *Application) AddToCart() gin.HandlerFunc {
 			c.AbortWithError(http.StatusBadRequest, errors.New("product id is empty"))
 			return
 		}
-		userQueryID := c.Query("user_id")
-		if userQueryID == "" {
+		userID := c.GetString("user_id")
+		if userID == "" {
 			log.Println("user id is empty")
 			c.AbortWithError(http.StatusBadRequest, errors.New("user id is empty"))
 			return
@@ -48,7 +48,7 @@ func (app *Application) AddToCart() gin.HandlerFunc {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
-		err = database.AddProductToCart(ctx, app.productsCollection, app.usersCollection, productID, userQueryID)
+		err = database.AddProductToCart(ctx, app.productsCollection, app.usersCollection, productID, userID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err)
 			return
@@ -65,8 +65,8 @@ func (app *Application) RemoveItem() gin.HandlerFunc {
 			c.AbortWithError(http.StatusBadRequest, errors.New("product id is empty"))
 			return
 		}
-		userQueryID := c.Query("user_id")
-		if userQueryID == "" {
+		userID := c.GetString("user_id")
+		if userID == "" {
 			log.Println("user id is empty")
 			c.AbortWithError(http.StatusBadRequest, errors.New("user id is empty"))
 			return
@@ -80,7 +80,7 @@ func (app *Application) RemoveItem() gin.HandlerFunc {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
-		err = database.RemoveItemFromCart(ctx, app.usersCollection, productID, userQueryID)
+		err = database.RemoveItemFromCart(ctx, app.usersCollection, productID, userID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -98,8 +98,8 @@ func (app *Application) InstantBuy() gin.HandlerFunc {
 			c.AbortWithError(http.StatusBadRequest, errors.New("product id is empty"))
 			return
 		}
-		userQueryID := c.Query("user_id")
-		if userQueryID == "" {
+		userID := c.GetString("user_id")
+		if userID == "" {
 			log.Println("user id is empty")
 			c.AbortWithError(http.StatusBadRequest, errors.New("user id is empty"))
 			return
@@ -113,7 +113,7 @@ func (app *Application) InstantBuy() gin.HandlerFunc {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
-		err = database.InstantBuyer(ctx, app.productsCollection, app.usersCollection, productID, userQueryID)
+		err = database.InstantBuyer(ctx, app.productsCollection, app.usersCollection, productID, userID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err)
 			return
