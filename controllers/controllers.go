@@ -133,7 +133,8 @@ func Login() gin.HandlerFunc {
 		}
 		tokens.UpdateAllTokens(token, refreshToken, foundUser.UserID)
 
-		c.JSON(http.StatusOK, foundUser)
+		c.Header("Authorization", "Bearer "+token)
+		c.JSON(http.StatusOK, "Login successful!")
 	}
 }
 

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kuthumipepple/shopping-cart/tokens"
@@ -9,12 +10,13 @@ import (
 
 func Authenticate() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		clientToken := c.Request.Header.Get("token")
-		if clientToken == "" {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "no authorization header provided"})
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}
+		clientToken := strings.TrimPrefix(authHeader, "Bearer ")
 
 		claims, errMsg := tokens.ValidateToken(clientToken)
 		if errMsg != "" {
