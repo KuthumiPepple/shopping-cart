@@ -97,7 +97,7 @@ func InstantBuyer(ctx context.Context, productsCollection, usersCollection *mong
 	var orderDetails models.Order
 	orderDetails.OrderID = primitive.NewObjectID()
 	orderDetails.OrderedAt = time.Now().Local()
-	orderDetails.OrderCart = make([]models.UserProduct, 0)
+	orderDetails.OrderCart = append(orderDetails.OrderCart, productDetails)
 	orderDetails.PaymentMethod.CashOnDelivery = true
 	orderDetails.Price = productDetails.Price
 
@@ -108,16 +108,6 @@ func InstantBuyer(ctx context.Context, productsCollection, usersCollection *mong
 		}},
 	}
 	_, err = usersCollection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		return err
-	}
-
-	filter2 := bson.M{"_id": id}
-	update2 := bson.M{
-		"$push": bson.M{
-			"orders.$[].order_list": productDetails,
-		}}
-	_, err = usersCollection.UpdateOne(ctx, filter2, update2)
 	if err != nil {
 		return err
 	}
