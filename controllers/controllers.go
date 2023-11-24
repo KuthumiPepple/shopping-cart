@@ -133,8 +133,7 @@ func Login() gin.HandlerFunc {
 		}
 		tokens.UpdateAllTokens(token, refreshToken, foundUser.UserID)
 
-		c.Header("Authorization", "Bearer "+token)
-		c.JSON(http.StatusOK, "Login successful!")
+		c.JSON(http.StatusOK, gin.H{"JWT token": token})
 	}
 }
 
