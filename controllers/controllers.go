@@ -160,7 +160,24 @@ func AddProductAdmin() gin.HandlerFunc {
 }
 
 func GetProducts() gin.HandlerFunc {
-	return func(c *gin.Context) {}
+	return func(c *gin.Context) {
+		var productList []models.Product
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+		cursor, err := productCollection.Find(ctx, bson.M{})
+		if err != nil {
+			c.IndentedJSON(http.StatusInternalServerError, "error occured while retrieving documents. Please try again later")
+			return
+		}
+		err = cursor.All(ctx, &productList)
+		if err != nil {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		c.IndentedJSON(http.StatusOK, productList)
+	}
 }
 
 func SearchProductByQuery() gin.HandlerFunc {
