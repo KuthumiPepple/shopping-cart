@@ -181,5 +181,38 @@ func GetProducts() gin.HandlerFunc {
 }
 
 func SearchProductByQuery() gin.HandlerFunc {
-	return func(c *gin.Context) {}
+	return func(c *gin.Context) {
+		var searchResults []models.Product
+		queryValue := c.Query("name")
+		if queryValue == "" {
+			log.Println("query is empty")
+			c.JSON(http.StatusNotFound, gin.H{"error": "invalid search index!"})
+			return
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+		cursor, err := productCollection.Find(
+			ctx,
+			bson.M{
+				"product_name": bson.M{
+					"$regex":   queryValue,
+					"$options": "i",
+				},
+			},
+		)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, "error occured while fetching the results!")
+			return
+		}
+		err = cursor.All(ctx, &searchResults)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, "error occured while decoding products into slice!")
+			return
+		}
+
+		c.JSON(http.StatusOK, searchResults)
+	}
 }
