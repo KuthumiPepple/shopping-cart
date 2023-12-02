@@ -29,9 +29,9 @@ func main() {
 
 	router.Use(middleware.Authenticate())
 
-	router.PATCH("/addtocart", app.AddToCart())
-	router.PATCH("/removeitem", app.RemoveItem())
-	router.PATCH("/instantbuy", app.InstantBuy())
+	router.POST("/addtocart", app.AddToCart())
+	router.DELETE("/removeitem", app.RemoveItem())
+	router.POST("/instantbuy", app.InstantBuy())
 
 	log.Fatal(router.Run(":" + port))
 }
