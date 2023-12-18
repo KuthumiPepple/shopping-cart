@@ -32,6 +32,7 @@ func main() {
 	router.POST("/addtocart", app.AddToCart())
 	router.DELETE("/removeitem", app.RemoveItem())
 	router.POST("/instantbuy", app.InstantBuy())
+	router.POST("/cartcheckout", app.BuyFromCart())
 
 	log.Fatal(router.Run(":" + port))
 }

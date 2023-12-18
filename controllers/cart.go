@@ -121,3 +121,23 @@ func (app *Application) InstantBuy() gin.HandlerFunc {
 		c.JSON(http.StatusOK, "Successfully placed the order")
 	}
 }
+
+func (app *Application) BuyFromCart() gin.HandlerFunc{
+	return func(c *gin.Context) {
+		userID := c.GetString("user_id")
+		if userID == "" {
+			log.Println("user id is empty")
+			c.AbortWithError(http.StatusBadRequest, errors.New("user id is empty"))
+			return
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+		err := database.BuyItemFromCart(ctx, app.usersCollection, userID)
+		if err != nil{
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, "Successfully placed the order")
+	}
+}
